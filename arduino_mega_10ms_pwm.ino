@@ -15,6 +15,7 @@
 #include <FlexiTimer2.h>
 
 
+const double timer_t = 1.0 / 10000;//タイマー割込み周期s
 
 int pulse[14];
 
@@ -33,7 +34,7 @@ void SdigitalWrite(int pin, bool state) {
     if (pin == 11)PORTB |= _BV(5);
     if (pin == 12)PORTB |= _BV(6);
     //if (pin == 13)PORTB |= _BV(7);
-    if(pin == 13)digitalWrite(13, HIGH);
+    if (pin == 13)digitalWrite(13, HIGH);
   }
   if (state == false) {
     if (pin == 2)PORTE &= ~_BV(4);
@@ -48,7 +49,7 @@ void SdigitalWrite(int pin, bool state) {
     if (pin == 11)PORTB &= ~_BV(5);
     if (pin == 12)PORTB &= ~_BV(6);
     //if (pin == 13)PORTB &= _BV(7);
-    if(pin == 13)digitalWrite(13,LOW);
+    if (pin == 13)digitalWrite(13, LOW);
   }
 }
 
@@ -58,16 +59,16 @@ void flash()
   static int flag[14];
 
   for (int i = 2; i < 14; i++) {
-    timer[i] += 100; //0.01ms
+    timer[i] += 100; 
     if (timer[i] <= 1500) {
       if (flag[i] == 0) {
-        digitalWrite(i, HIGH);
+        SdigitalWrite(i, HIGH);
         flag[i] = 1;
       }
     }
     else if (timer[i] <= 10000) {
       if (flag[i] == 1) {
-        digitalWrite(i, LOW);
+        SdigitalWrite(i, LOW);
         flag[i] = 0;
       }
     }
@@ -82,7 +83,7 @@ void flash()
 void setup()
 {
   for (int i = 2; i < 14; i++)pinMode(i, OUTPUT);
-  FlexiTimer2::set(1, 1.0 / 10000, flash); // call every 1ms "ticks"
+  FlexiTimer2::set(1, timer_t, flash); // call every 1ms "ticks"
   FlexiTimer2::start();
   Serial.begin(9600);
 }
@@ -90,4 +91,5 @@ void setup()
 void loop()
 {
   for (int i = 2; i < 14; i++)pulse[i] = 1500;
+  //Serial.println(timer_t_u);
 }
