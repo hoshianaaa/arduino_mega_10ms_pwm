@@ -1,17 +1,3 @@
-/*
-  FlexiTimer2:
-  Arduino library to use timer 2 with a configurable resolution.
-  Based on MsTimer2 by Javier Valencia. It is called FlexiTimer2 because it
-  is based on MsTimer2, but offers more flexibility,
-  since it has a configurable timer resolution.
-  MsTimer2 library: http://www.arduino.cc/playground/Main/MsTimer2
-
-  For more details on FlexiTimer2 see:
-  http://www.arduino.cc/playground/Main/FlexiTimer2
-  https://github.com/wimleers/flexitimer2
-
-*/
-
 #include <FlexiTimer2.h>
 
 
@@ -91,5 +77,4 @@ void setup()
 void loop()
 {
   for (int i = 2; i < 14; i++)pulse[i] = 1500;
-  //Serial.println(timer_t_u);
 }
