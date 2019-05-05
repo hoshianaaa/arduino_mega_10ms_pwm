@@ -1,24 +1,16 @@
-/*
-  FlexiTimer2:
-  Arduino library to use timer 2 with a configurable resolution.
-  Based on MsTimer2 by Javier Valencia. It is called FlexiTimer2 because it
-  is based on MsTimer2, but offers more flexibility,
-  since it has a configurable timer resolution.
-  MsTimer2 library: http://www.arduino.cc/playground/Main/MsTimer2
-
-  For more details on FlexiTimer2 see:
-  http://www.arduino.cc/playground/Main/FlexiTimer2
-  https://github.com/wimleers/flexitimer2
-
-*/
-
 #include <FlexiTimer2.h>
 
+volatile int PULSE[14];
 
-const double timer_t = 1.0 / 10000;//タイマー割込み周期s
 
-int pulse[14];
+//サーボの角度をセット (pin 2-13, deg:0-180)
+int ServoDegree(int pin, int deg) {
+  int pul;
+  pul = map(deg, 0, 180, 900, 2100);
+  PULSE[pin] = pul;
+}
 
+//高速digitalWrite
 void SdigitalWrite(int pin, bool state) {
   //PORT- |= _BV(-);
   if (state == true) {
@@ -59,21 +51,23 @@ void flash()
   static int flag[14];
 
   for (int i = 2; i < 14; i++) {
-    timer[i] += 100; 
-    if (timer[i] <= pulse[i]) {
+    timer[i] += 100;
+    if (timer[i] <= PULSE[i]) {
       if (flag[i] == 0) {
-        digitalWrite(i, HIGH);
+        SdigitalWrite(i, HIGH);
         flag[i] = 1;
       }
     }
-    else if (timer[i] <= 20000) {
+    else if (timer[i] <= 10000) {
       if (flag[i] == 1) {
-        digitalWrite(i, LOW);
+        SdigitalWrite(i, LOW);
         flag[i] = 0;
       }
     }
     else timer[i] = 0;
   }
+
+
 
 }
 
@@ -83,20 +77,20 @@ void flash()
 void setup()
 {
   for (int i = 2; i < 14; i++)pinMode(i, OUTPUT);
-  FlexiTimer2::set(1, 1.0 / 10000, flash); // call every 1ms "ticks"
+  FlexiTimer2::set(1, 1.0 / 10000, flash);
   FlexiTimer2::start();
   Serial.begin(9600);
-  for (int i = 2; i < 14; i++)pulse[i] = 1500;
 }
 
 void loop()
 {
-  for (int i = 2; i < 14; i++)pulse[i] = 1400;
-  delay(1000);
-  for (int i = 2; i < 14; i++)pulse[i] = 1500;
-  delay(1000);
+
+  for (int i = 2; i < 14; i++)ServoDegree(i, 90);
 
 
+  for (int i = 0; i < 180; i++) {
+    ServoDegree(13, i);
+    delay(20);
 
-  //Serial.println(timer_t_u);
+  }
 }
