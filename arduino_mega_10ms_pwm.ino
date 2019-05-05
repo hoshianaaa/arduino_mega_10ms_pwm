@@ -1,3 +1,17 @@
+/*
+  FlexiTimer2:
+  Arduino library to use timer 2 with a configurable resolution.
+  Based on MsTimer2 by Javier Valencia. It is called FlexiTimer2 because it
+  is based on MsTimer2, but offers more flexibility,
+  since it has a configurable timer resolution.
+  MsTimer2 library: http://www.arduino.cc/playground/Main/MsTimer2
+
+  For more details on FlexiTimer2 see:
+  http://www.arduino.cc/playground/Main/FlexiTimer2
+  https://github.com/wimleers/flexitimer2
+
+*/
+
 #include <FlexiTimer2.h>
 
 
@@ -46,15 +60,15 @@ void flash()
 
   for (int i = 2; i < 14; i++) {
     timer[i] += 100; 
-    if (timer[i] <= 1500) {
+    if (timer[i] <= pulse[i]) {
       if (flag[i] == 0) {
-        SdigitalWrite(i, HIGH);
+        digitalWrite(i, HIGH);
         flag[i] = 1;
       }
     }
-    else if (timer[i] <= 10000) {
+    else if (timer[i] <= 20000) {
       if (flag[i] == 1) {
-        SdigitalWrite(i, LOW);
+        digitalWrite(i, LOW);
         flag[i] = 0;
       }
     }
@@ -69,12 +83,20 @@ void flash()
 void setup()
 {
   for (int i = 2; i < 14; i++)pinMode(i, OUTPUT);
-  FlexiTimer2::set(1, timer_t, flash); // call every 1ms "ticks"
+  FlexiTimer2::set(1, 1.0 / 10000, flash); // call every 1ms "ticks"
   FlexiTimer2::start();
   Serial.begin(9600);
+  for (int i = 2; i < 14; i++)pulse[i] = 1500;
 }
 
 void loop()
 {
+  for (int i = 2; i < 14; i++)pulse[i] = 1400;
+  delay(1000);
   for (int i = 2; i < 14; i++)pulse[i] = 1500;
+  delay(1000);
+
+
+
+  //Serial.println(timer_t_u);
 }
